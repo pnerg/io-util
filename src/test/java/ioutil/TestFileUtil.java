@@ -80,17 +80,24 @@ public class TestFileUtil extends BaseAssert implements ReflectionAssert, TryAss
 
 	@Test
 	public void mkdir_success() throws Throwable {
-		Try<File> newDir = FileUtil.mkdir(testRootDir, "mkdir");
+		Try<File> newDir = mkdir(testRootDir, "mkdir");
 		assertSuccess(newDir);
 		assertTrue(newDir.get().isDirectory());
 	}	
 
 	@Test(expected = FileAlreadyExistsException.class)
 	public void mkdir_dirExists() throws Throwable {
-		Try<File> newDir = FileUtil.mkdir(new File("target/"), testRootDir.getName());
+		Try<File> newDir = mkdir(new File("target/"), testRootDir.getName());
 		assertFailure(newDir);
 		newDir.get(); //this should throw FileAlreadyExistsException
 	}	
+	
+	@Test(expected = IOException.class)
+	public void mkdir_illegalPath() throws Throwable {
+		Try<File> newDir = mkdir(new File("/illegal-path"), "mkdir");
+		assertFailure(newDir);
+		newDir.get(); //this should throw IOException
+	}
 	
 	@Test
 	public void delete_directoryWithDirectories() throws IOException {
