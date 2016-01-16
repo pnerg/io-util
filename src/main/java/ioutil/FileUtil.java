@@ -16,9 +16,15 @@
 package ioutil;
 
 import static javascalautils.OptionCompanion.Option;
+import static javascalautils.TryCompanion.Try;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.stream.Stream;
+
+import javascalautils.Try;
+
 
 /**
  * Utilities for file management.
@@ -38,6 +44,7 @@ public final class FileUtil {
 	 * Deletes the provided file path. <br>
 	 * In case the path denotes a directory the method will recursively go through the provided directory and delete all files/directories it finds. <br>
 	 * A non-existing path is counted as successful as it in fact no longer exists after this operation.
+	 * 
 	 * @param path
 	 *            The path to delete
 	 * @return <code>true</code> only if the path and all its possible child paths are deleted
@@ -52,4 +59,31 @@ public final class FileUtil {
 		return path.exists() ? path.delete() : true;
 	}
 
+	/**
+	 * Creates the requested directory. <br>
+	 * The operation will fail if the directory already exists or could not be created.
+	 * @param parent
+	 *            The parent directory
+	 * @param name
+	 *            The name of the sub-directory
+	 * @return Either Success(File) or a Failure with the exception
+	 * @since 1.0
+	 */
+	public static Try<File> mkdir(File parent, String name) {
+		return Try(() -> {
+			File dir = new File(parent, name);
+
+			// bail if the directory already exists
+			if (dir.exists()) {
+				throw new FileAlreadyExistsException("Directory already exists [" + dir.getAbsolutePath() + "]");
+			}
+
+			// bail if we fail to create the directory
+			if (!dir.mkdirs()) {
+				throw new IOException("Failed to create dir [" + dir.getAbsolutePath() + "]");
+			}
+
+			return dir;
+		});
+	}
 }
