@@ -23,13 +23,15 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Test;
 
+import javascalautils.Try;
 import junitextensions.ReflectionAssert;
+import junitextensions.TryAssert;
 
 /**
  * Test the class {@link FileUtil}
  * @author Peter Nerg
  */
-public class TestFileUtil extends BaseAssert implements ReflectionAssert {
+public class TestFileUtil extends BaseAssert implements ReflectionAssert, TryAssert {
 
 	private final File testRootDir;
 	
@@ -73,6 +75,13 @@ public class TestFileUtil extends BaseAssert implements ReflectionAssert {
 		deleteAndAssertPath(dir);
 	}
 
+	@Test
+	public void mkdir_success() throws Throwable {
+		Try<File> newDir = FileUtil.mkdir(testRootDir, "mkdir");
+		assertSuccess(newDir);
+		assertTrue(newDir.get().isDirectory());
+	}	
+	
 	@Test
 	public void delete_directoryWithDirectories() throws IOException {
 		//create a dir and add two file to it
