@@ -36,8 +36,8 @@ public final class FileUtil {
 
 	/**
 	 * Deletes the provided file path. <br>
-	 * In case the path denotes a directory the method will recursively go through the provided directory and delete all files/directories it finds.
-	 * 
+	 * In case the path denotes a directory the method will recursively go through the provided directory and delete all files/directories it finds. <br>
+	 * A non-existing path is counted as successful as it in fact no longer exists after this operation.
 	 * @param path
 	 *            The path to delete
 	 * @return <code>true</code> only if the path and all its possible child paths are deleted
