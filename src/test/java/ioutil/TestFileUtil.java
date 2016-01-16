@@ -34,7 +34,7 @@ public class TestFileUtil extends BaseAssert implements ReflectionAssert {
 	private final File testRootDir;
 	
 	public TestFileUtil() throws IOException {
-		testRootDir = createDummyDir();	
+		testRootDir = createEmptyDir();	
 	}
 	
 	@After
@@ -50,40 +50,61 @@ public class TestFileUtil extends BaseAssert implements ReflectionAssert {
 	
 	@Test
 	public void delete_nonExistingPath() {
-		assertTrue(delete(new File("/no-such-path")));
+		deleteAndAssertPath(new File(testRootDir,"no-such-path"));
 	}
 
 	@Test
 	public void delete_existingFile() throws IOException {
-		File f = createDummyFile();
-		assertTrue(delete(f));
-		assertPathNotExist(f);
+		deleteAndAssertPath(createDummyFile());
 	}
 
 	@Test
 	public void delete_emptyDirectory() throws IOException {
-		File d = createDummyDir();
-		assertTrue(delete(d));
-		assertPathNotExist(d);
+		deleteAndAssertPath(createEmptyDir());
+	}
+
+	@Test
+	public void delete_nonEmptyDirectory() throws IOException {
+		//create a dir and add two file to it
+		File dir = createEmptyDir();
+		createDummyFile(dir);
+		createDummyFile(dir);
+		
+		deleteAndAssertPath(dir);
+	}
+
+	@Test
+	public void delete_directoryWithDirectories() throws IOException {
+		//create a dir and add two file to it
+		File dir = createEmptyDir();
+		createDummyFile(dir);
+		createDummyFile(dir);
+		
+		deleteAndAssertPath(testRootDir);
 	}
 	
-	private void assertPathNotExist(File f) {
+	private static void deleteAndAssertPath(File path) {
+		assertTrue(delete(path));
+		assertPathNotExist(path);
+	}
+	
+	private static void assertPathNotExist(File f) {
 		assertFalse("Unexpected file ["+f.getAbsolutePath()+"]", f.exists());
 	}
 
-	private File createDummyDir() throws IOException {
-		File f = new File("target/TestFileUtil"+System.nanoTime()+"/");
+	private File createEmptyDir() throws IOException {
+		File f = new File(testRootDir, "Dir"+System.nanoTime()+"/");
 		assertTrue(f.mkdirs());
 		assertTrue(f.isDirectory());
 		return f;
 	}
 
 	private File createDummyFile() throws IOException {
-		return createDummyFile(new File("target/"));
+		return createDummyFile(testRootDir);
 	}
 
 	private File createDummyFile(File parent) throws IOException {
-		File f = new File(parent, "File"+System.currentTimeMillis()+".dummy");
+		File f = new File(parent, "File"+System.nanoTime()+".dummy");
 		assertTrue(f.createNewFile());
 		assertTrue(f.isFile());
 		return f;
