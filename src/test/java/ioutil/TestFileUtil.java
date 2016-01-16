@@ -16,9 +16,10 @@
 package ioutil;
 
 import static ioutil.FileUtil.delete;
-
+import static ioutil.FileUtil.mkdir;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 
 import org.junit.After;
 import org.junit.Test;
@@ -36,7 +37,9 @@ public class TestFileUtil extends BaseAssert implements ReflectionAssert, TryAss
 	private final File testRootDir;
 	
 	public TestFileUtil() throws IOException {
-		testRootDir = createEmptyDir();	
+		Try<File> t = mkdir(new File("target/"), "TestFileUtil-"+System.nanoTime());
+		assertSuccess(t);
+		testRootDir = t.orNull(); //orNull will never happen	
 	}
 	
 	@After
@@ -80,6 +83,13 @@ public class TestFileUtil extends BaseAssert implements ReflectionAssert, TryAss
 		Try<File> newDir = FileUtil.mkdir(testRootDir, "mkdir");
 		assertSuccess(newDir);
 		assertTrue(newDir.get().isDirectory());
+	}	
+
+	@Test(expected = FileAlreadyExistsException.class)
+	public void mkdir_dirExists() throws Throwable {
+		Try<File> newDir = FileUtil.mkdir(new File("target/"), testRootDir.getName());
+		assertFailure(newDir);
+		newDir.get(); //this should throw FileAlreadyExistsException
 	}	
 	
 	@Test
