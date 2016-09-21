@@ -5,7 +5,7 @@
 	<groupId>org.dmonix.util</groupId>
 	<artifactId>io-util</artifactId>
 	<name>I/O Util</name>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<packaging>jar</packaging>
 	<description>Java implementation of some of the core utilities from Scala</description>
 	<url>https://github.com/pnerg/io-util</url>
